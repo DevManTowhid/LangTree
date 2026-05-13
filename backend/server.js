@@ -7,6 +7,10 @@ const app = express();
 // Middleware to parse incoming JSON requests
 app.use(express.json()); 
 
+app.use(cors({
+    origin: 'http://localhost:3000', // Allow all origins (for development). In production, specify your frontend URL.
+}))
+
 // Mount the language routes
 app.use('/api/languages', languageRoutes);
 
