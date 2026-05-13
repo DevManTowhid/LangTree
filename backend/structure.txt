@@ -1,0 +1,15 @@
+
+├── config/
+│   └── firebase-config.js       # Initialize your Firebase Admin SDK here
+├── controllers/
+│   └── languageController.js    # Logic for your API endpoints (req, res)
+├── routes/
+│   └── languageRoutes.js        # Maps URLs (e.g., /api/languages) to controllers
+├── utils/
+│   └── create_ancestry_chain.js # Your uploaded file goes here! (Helper functions)
+├── middlewares/
+│   └── errorHandler.js          # (Optional) For catching and formatting errors
+├── .env                         # Your secret API keys (never commit this to GitHub!)
+├── .gitignore
+├── package.json                 # Lists your dependencies (express, firebase-admin)
+└── server.js                    # The main entry point that starts your app

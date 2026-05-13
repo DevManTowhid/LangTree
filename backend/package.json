@@ -1,0 +1,14 @@
+{
+  "name": "langtree-backend",
+  "version": "1.0.0",
+  "description": "Language Tree Backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test-db": "node test-connection.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "firebase-admin": "^12.7.0"
+  }
+}
