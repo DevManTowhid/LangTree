@@ -1,37 +1,64 @@
-// controllers/languageController.js
-const { db } = require('../config/firebase-config');
-
+// // controllers/languageController.js
+// const { db } = require('../config/firebase-config');
+import {db} from "../config/firebase-config.js"
 const getLanguage = async (req, res) => {
   try {
-    // 1. Extract the slug from the URL (e.g., "bengali" or "indo-european")
     const slug = req.params.slug;
+    console.log(`\n🔍 Fetching: ${slug}`);
 
-    // 2. Point to that specific document in the 'languages' collection
     const docRef = db.collection('languages').doc(slug);
     const docSnap = await docRef.get();
 
-    // 3. Handle the 404 Case (Document doesn't exist)
-    // This is crucial for handling those "Soft Links" we discussed!
     if (!docSnap.exists) {
-      return res.status(404).json({
-        success: false,
-        message: `The language '${slug}' does not exist in the database yet.`
-      });
+      return res.status(404).json({ success: false, message: "Not found" });
     }
 
-    // 4. Return the data to the frontend
+    // 1. Get the base data
+    let languageData = docSnap.data();
+    let ancestryChain = [];
+    
+    // 2. Start the Recursive Walk
+    // We look at the immediate_parent of the CURRENT language first
+    let parentPointer = languageData.immediate_parent;
+
+    console.log(`🪜 Starting climb from parent: ${parentPointer?.name || 'None'}`);
+
+    while (parentPointer && parentPointer.ref_id) {
+      // Fetch the parent document from Firestore
+      const parentSnap = await db.collection('languages').doc(parentPointer.ref_id).get();
+      
+      if (parentSnap.exists) {
+        const parentData = parentSnap.data();
+        
+        // Add to the START of the array so it goes [Root -> Parent -> Child]
+        ancestryChain.unshift({
+          ref_id: parentPointer.ref_id,
+          name: parentData.name
+        });
+
+        console.log(`✅ Found Ancestor: ${parentData.name}`);
+
+        // Move the pointer up to the grandparent
+        parentPointer = parentData.immediate_parent;
+      } else {
+        console.log(`⚠️ Parent ref '${parentPointer.ref_id}' exists in data but document is missing in Firestore.`);
+        break; 
+      }
+    }
+
+    // 3. Attach the finished chain
+    languageData.ancestry = ancestryChain;
+    console.log(`🏁 Chain complete. Total ancestors: ${ancestryChain.length}`);
+
     return res.status(200).json({
       success: true,
-      data: docSnap.data()
+      data: languageData
     });
 
   } catch (error) {
-    console.error(`Error fetching document:`, error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error"
-    });
+    console.error(`❌ Controller Error:`, error);
+    return res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
 
-module.exports = { getLanguage };
+export { getLanguage };
