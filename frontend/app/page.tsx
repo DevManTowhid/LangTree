@@ -29,7 +29,7 @@ export default function Home() {
   const handleFamilySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value.toLowerCase().replace(/\s+/g, "-");
     if (value) {
-      router.push(`/family/${value}`);
+      router.push(`/${value}`);
     }
   };
 
