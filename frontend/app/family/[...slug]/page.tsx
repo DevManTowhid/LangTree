@@ -13,8 +13,11 @@ function generatePath(basePath: string[], targetId: string) {
 // 1. Fetch function that talks to your Express backend
 async function getLanguageData(slug: string) {
     try {
-        const res = await fetch(`http://127.0.0.1:5000/api/languages/${slug}`, {
-            next: { revalidate: 3600 } // Using Next.js caching instead of no-store
+        // Look for the env variable first. If it's missing (like on your local PC), fallback to localhost.
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000';
+
+        const res = await fetch(`${API_URL}/api/languages/${slug}`, {
+            next: { revalidate: 3600 } 
         });
 
         if (!res.ok) {

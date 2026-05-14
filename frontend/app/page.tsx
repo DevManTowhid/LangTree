@@ -43,7 +43,12 @@ export default function Home() {
 
     try {
       // Query your Express backend
-      const res = await fetch(`http://127.0.0.1:5000/api/languages/${slug}`);
+      // Look for the env variable first. If it's missing (like on your local PC), fallback to localhost.
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000';
+
+      const res = await fetch(`${API_URL}/api/languages/${slug}`, {
+          next: { revalidate: 3600 } 
+      });
       
       if (res.status === 404) {
         // Redirect to a custom "Not Added Yet" page
