@@ -13,9 +13,8 @@ function generatePath(basePath: string[], targetId: string) {
 // 1. Fetch function that talks to your Express backend
 async function getLanguageData(slug: string) {
     try {
-        // We still only need the final slug to query Firestore
         const res = await fetch(`http://127.0.0.1:5000/api/languages/${slug}`, {
-            cache: 'no-store' 
+            next: { revalidate: 3600 } // Using Next.js caching instead of no-store
         });
 
         if (!res.ok) {
@@ -31,11 +30,11 @@ async function getLanguageData(slug: string) {
     }
 }
 
-// 2. The Server Component (Next.js 15+ compatible)
+// 2. The Server Component
 export default async function LanguagePage({ 
     params 
 }: { 
-    params: Promise<{ slug: string[] }> // Changed to string array for catch-all
+    params: Promise<{ slug: string[] }> 
 }) {
     const { slug } = await params;
     
@@ -50,27 +49,32 @@ export default async function LanguagePage({
     return (
         <main className="min-h-screen bg-slate-50 dark:bg-zinc-950 text-slate-900 dark:text-slate-100 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
-                
-                {/* Visual Language Hierarchy (Nested Path Version) */}
-                <nav className="mb-10 bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm">
-                    <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">
-                        Phylogenetic Hierarchy
-                    </h3>
-                    <ol className="flex flex-wrap items-center text-sm font-medium">
-                        
-                        {/* Root Link */}
-                        <li className="flex items-center">
-                            <Link href="/family" className="text-indigo-600 dark:text-indigo-400 hover:underline hover:text-indigo-800 transition-colors">
-                                Families Index
-                            </Link>
-                            <svg className="w-4 h-4 mx-2 text-slate-300 dark:text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
-                        </li>
+                {/* Visual Language Hierarchy */}
+<nav className="mb-10 bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm">
+    <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">
+        Phylogenetic Hierarchy
+    </h3>
+    <ol className="flex flex-wrap items-center text-sm font-medium">
+        
+        {/* THE SNIPPET YOU PASTED: The Root / Home Link */}
+        <li className="flex items-center">
+            <Link 
+                href="/"  
+                className="flex items-center text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 transition-colors group" aria-label="Go to Home">
+                <svg className="w-4 h-4 mr-1.5 group-hover:-translate-y-0.5 transition-transform" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                </svg>
+                <span className="group-hover:underline">Home</span>
+            </Link>
+            <svg className="w-4 h-4 mx-2 text-slate-300 dark:text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+        </li>
+
+        {/* ... Map through language.ancestry here ... */}
 
                         {/* Map through ancestors and build the chain links */}
                         {language.ancestry && language.ancestry.map((ancestor: any, index: number) => {
-                            // Create the path for this specific ancestor by slicing the chain array
                             const pathSegments = language.ancestry.slice(0, index).map((a: any) => a.ref_id);
                             const fullAncestralLink = generatePath(pathSegments, ancestor.ref_id);
 
@@ -119,7 +123,7 @@ export default async function LanguagePage({
                             </p>
                         </section>
 
-                        {/* Descendant Branches (Modified to create nested URLs) */}
+                        {/* Descendant Branches */}
                         {language.children && language.children.length > 0 && (
                             <section>
                                 <h2 className="text-3xl font-bold mb-6 border-b pb-4 dark:border-zinc-800">
@@ -128,7 +132,6 @@ export default async function LanguagePage({
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     {language.children.map((branch: any) => (
                                         <Link 
-                                            // Build the child link by appending to the CURRENT full path
                                             href={generatePath(slug, branch.ref_id)} 
                                             key={branch.ref_id}
                                             className="group relative flex items-center justify-between p-6 bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 hover:border-indigo-500 hover:shadow-lg transition-all"
@@ -152,7 +155,7 @@ export default async function LanguagePage({
                             </section>
                         )}
 
-                        {/* Gallery remains same */}
+                        {/* Gallery */}
                         {language.images && language.images.length > 0 && (
                             <section>
                                 <h2 className="text-3xl font-bold mb-6 border-b pb-4 dark:border-zinc-800">Gallery</h2>
@@ -173,7 +176,7 @@ export default async function LanguagePage({
                         )}
                     </div>
 
-                    {/* Sidebar / Infobox remains same */}
+                    {/* Sidebar / Infobox */}
                     <aside className="lg:col-span-1 space-y-8">
                         {language.metadata && (
                             <div className="bg-indigo-600 text-white p-8 rounded-3xl shadow-xl">
