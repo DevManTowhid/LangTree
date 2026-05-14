@@ -1,4 +1,4 @@
-// app/family/[...slug]/page.tsx
+// app/[...slug]/page.tsx
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 
@@ -7,7 +7,7 @@ import Link from 'next/link';
  */
 function generatePath(basePath: string[], targetId: string) {
     const segments = [...basePath, targetId];
-    return `/family/${segments.join('/')}`;
+    return `/${segments.join('/')}`;
 }
 
 // 1. Fetch function that talks to your Express backend

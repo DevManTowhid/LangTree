@@ -62,7 +62,7 @@ export default function Home() {
       const pathSegments = data.ancestry ? data.ancestry.map((a: any) => a.ref_id) : [];
       pathSegments.push(data.slug);
       
-      const fullPath = `/family/${pathSegments.join("/")}`;
+      const fullPath = `/${pathSegments.join("/")}`;
       router.push(fullPath);
 
     } catch (error) {
