@@ -1,0 +1,9 @@
+{
+  "name": "langtree-root",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Root workspace for the LangTree project",
+  "workspaces": [
+    "frontend"
+  ]
+}
