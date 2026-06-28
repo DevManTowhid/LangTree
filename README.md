@@ -11,49 +11,6 @@ Unlike flat data applications, LangTree handles deep, biological-style recursive
 * **Agentic Path Reconstruction:** A smart search algorithm that not only finds target languages but dynamically validates and reconstructs the full ancestral path for immediate frontend redirection.
 * **Optimized Static Generation:** Pre-renders deep tree branches at build time via Vercel, ensuring instant page loads for users without taxing the database.
 
----
-
-## 🧠 System Architecture
-
-```mermaid
-graph TD
-    %% Frontend Layer
-    subgraph Frontend [Next.js 15 Application]
-        UI[React 19 UI / Tailwind CSS]
-        Search[Agentic Search Engine]
-        Router[Catch-all Router '/family/[...slug]']
-        
-        UI --> Search
-        UI --> Router
-    end
-
-    %% Backend Layer
-    subgraph Backend [Express/Node.js API]
-        API[REST API Router]
-        PathBuilder[Path Reconstruction Logic]
-        Cache[In-Memory Caching]
-        
-        API --> PathBuilder
-        API --> Cache
-    end
-
-    %% Database Layer
-    subgraph Database [Firebase Firestore]
-        Docs[(Denormalized NoSQL Docs)]
-        AncestryIdx[Ancestry Indexing]
-        
-        Docs --- AncestryIdx
-    end
-
-    %% Connections
-    Router -- Fetch Target Node --> API
-    Search -- Query Name/Family --> API
-    PathBuilder -- Query --> Database
-    Cache -.-> Database
-```
-
----
-
 ## 🗄️ Database Design: The Data Denormalization Strategy
 
 ### The Problem
